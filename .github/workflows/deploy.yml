@@ -83,7 +83,7 @@ jobs:
 
                     echo "🚀 Starting apps using PM2..."
 
-                    [ -f apps/web/.output/server/index.mjs ] && pm2 start apps/web/.output/server/index.mjs --name web-app || echo "❌ web-app entry not found"
+                    pm2 start "pnpm --filter web start" --name web-app
                     [ -f apps/http-server/dist/index.js ] && pm2 start apps/http-server/dist/index.js --name http-server || echo "❌ http-server entry not found"
                     [ -f apps/ws-server/dist/index.js ] && pm2 start apps/ws-server/dist/index.js --name ws-server || echo "❌ ws-server entry not found"
 
