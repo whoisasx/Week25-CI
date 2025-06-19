@@ -19,28 +19,49 @@ jobs:
 
             - name: 🚀 Deploy on Google VM
               run: |
-                  ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
+                  ssh -t -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} "bash -l -i" << 'EOF'
+                    echo "🔄 Sourcing nvm..."
                     export NVM_DIR="\$HOME/.nvm"
                     [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+
+                    echo "📦 Using default Node..."
                     nvm use node
-                    export PATH="\$(npm bin -g):\$PATH"
+
+                    echo "🧪 Checking Node and NPM..."
+                    echo "Node: \$(node -v || echo '❌ Not Found')"
+                    echo "NPM: \$(npm -v || echo '❌ Not Found')"
+
+                    if ! command -v npm &> /dev/null; then
+                      echo "📥 Installing npm..."
+                      nvm install-latest-npm
+                    fi
+
+                    echo "🚀 Ensuring pnpm is installed..."
+                    if ! command -v pnpm &> /dev/null; then
+                      echo "📦 Installing pnpm..."
+                      npm install -g pnpm
+                    fi
+
+                    echo "🔧 Ensuring git is installed..."
+                    if ! command -v git &> /dev/null; then
+                      echo "📦 Installing git..."
+                      sudo apt update && sudo apt install -y git
+                    fi
+
+                    echo "🧰 Ensuring pm2 is installed..."
+                    if ! command -v pm2 &> /dev/null; then
+                      echo "📦 Installing pm2..."
+                      npm install -g pm2
+                    fi
 
                     echo "🧠 Whoami: \$(whoami)"
                     echo "📂 Current Directory: \$(pwd)"
                     echo "📃 PATH: \$PATH"
                     echo "🧪 Node: \$(node -v)"
                     echo "📦 NPM: \$(npm -v)"
-                    echo "😊 PNPM: \$(pnpm -v)"
-
-                    echo "🛠️ Ensuring pnpm is installed..."
-                    if ! command -v pnpm &> /dev/null; then
-                      echo "📦 Installing pnpm..."
-                      npm install -g pnpm
-                    else
-                      echo "✅ pnpm already installed"
-                    fi
-
                     echo "🚀 PNPM: \$(pnpm -v)"
+                    echo "🔧 Git: \$(git --version)"
+                    echo "🧰 PM2: \$(pm2 -v)"
 
                     echo "📁 Navigating to project directory..."
                     cd /home/${{ secrets.DEV_VM_USERNAME }}/desktop/Week25-CI
@@ -78,4 +99,4 @@ jobs:
                     pm2 save
 
                     echo "✅ Deployment complete!"
-                  EOF
+                    EOF
