@@ -22,6 +22,10 @@ jobs:
                   ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
                     set -e
                     source ~/.bashrc || true
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+                    export PATH="$NVM_DIR/versions/node/v24.2.0/bin:$PATH"
 
                     echo "🧠 Whoami: $(whoami)"
                     echo "📂 Current Directory: $(pwd)"
