@@ -21,6 +21,7 @@ jobs:
               run: |
                   ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
                     set -e
+                    source ~/.bashrc || true
 
                     echo "📁 Navigating to project directory..."
                     cd /home/${{ secrets.DEV_VM_USERNAME }}/desktop/Week25-CI
