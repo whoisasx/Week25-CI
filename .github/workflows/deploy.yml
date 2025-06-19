@@ -20,9 +20,12 @@ jobs:
             - name: 🚀 Deploy on Google VM
               run: |
                   ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
-                    echo "🧠 Whoami: $(whoami)"
-                    echo "📂 Current Directory: $(pwd)"
-                    echo "📃 PATH: $PATH"
+                    export NVM_DIR="\$HOME/.nvm"
+                    [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+
+                    echo "🧠 Whoami: \$(whoami)"
+                    echo "📂 Current Directory: \$(pwd)"
+                    echo "📃 PATH: \$PATH"
                     which npm || echo "⚠️ npm not found in PATH"
 
                     echo "📁 Navigating to project directory..."
