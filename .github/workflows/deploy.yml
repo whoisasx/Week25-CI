@@ -18,15 +18,6 @@ jobs:
                   node-version: 18
                   cache: "pnpm"
 
-            - name: 🧩 Setup pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-                  run_install: false
-
-            - name: 🔧 Add pnpm to PATH
-              run: echo "${PNPM_HOME}" >> $GITHUB_PATH
-
             - name: 🔐 Setup SSH Agent
               uses: webfactory/ssh-agent@v0.9.0
               with:
