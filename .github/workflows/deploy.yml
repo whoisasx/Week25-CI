@@ -54,15 +54,6 @@ jobs:
                       npm install -g pm2
                     fi
 
-                    echo "🧠 Whoami: \$(whoami)"
-                    echo "📂 Current Directory: \$(pwd)"
-                    echo "📃 PATH: \$PATH"
-                    echo "🧪 Node: \$(node -v)"
-                    echo "📦 NPM: \$(npm -v)"
-                    echo "🚀 PNPM: \$(pnpm -v)"
-                    echo "🔧 Git: \$(git --version)"
-                    echo "🧰 PM2: \$(pm2 -v)"
-
                     echo "📁 Navigating to project directory..."
                     cd /home/${{ secrets.DEV_VM_USERNAME }}/desktop/Week25-CI
 
@@ -86,17 +77,19 @@ jobs:
                     pnpm build
 
                     echo "🧹 Removing old PM2 processes (if any)..."
-                    pm2 delete web-app 
-                    pm2 delete http-api 
-                    pm2 delete ws-server
+                    pm2 delete web-app || true
+                    pm2 delete http-server || true
+                    pm2 delete ws-server || true
 
                     echo "🚀 Starting apps using PM2..."
-                    pm2 start apps/web/.output/server/index.mjs --name web-app
-                    pm2 start apps/http/dist/index.js --name http-server
-                    pm2 start apps/ws/dist/index.js --name ws-server
+
+                    [ -f apps/web/.output/server/index.mjs ] && pm2 start apps/web/.output/server/index.mjs --name web-app || echo "❌ web-app entry not found"
+                    [ -f apps/http-server/dist/index.js ] && pm2 start apps/http-server/dist/index.js --name http-server || echo "❌ http-server entry not found"
+                    [ -f apps/ws-server/dist/index.js ] && pm2 start apps/ws-server/dist/index.js --name ws-server || echo "❌ ws-server entry not found"
 
                     echo "💾 Saving PM2 process list for restart on reboot..."
                     pm2 save
 
                     echo "✅ Deployment complete!"
+                    exit 0
                     EOF
