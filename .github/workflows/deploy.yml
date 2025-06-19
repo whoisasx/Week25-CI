@@ -23,7 +23,7 @@ jobs:
                     set -e
 
                     echo "📁 Navigating to project directory..."
-                    cd /home/${{ secrets.DEV_VM_HOST }}/desktop/Week25-CI
+                    cd /home/${{ secrets.DEV_VM_USERNAME }}/desktop/Week25-CI
 
                     echo "🔄 Resetting repo to match remote main..."
                     git fetch origin main
