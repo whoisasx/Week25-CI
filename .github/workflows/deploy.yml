@@ -24,9 +24,9 @@ jobs:
                     export NVM_DIR="\$HOME/.nvm"
                     [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
                     
-                    echo "📦 Using default Node..."
-                    nvm use default || {
-                      echo '❌ Failed to activate default Node version!'
+                    echo "📦 Using Node v24.2.0..."
+                    nvm use 24.2.0 || {
+                      echo '❌ Failed to activate Node v24.2.0!'
                       exit 1
                     }
                     echo "Node: $(node -v)"
