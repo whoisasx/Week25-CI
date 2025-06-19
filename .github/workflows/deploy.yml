@@ -25,12 +25,11 @@ jobs:
                     [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
                     
                     echo "📦 Using Node (via default alias)..."
-                    if ! nvm use default > /dev/null 2>&1; then
+                    if ! nvm use stable > /dev/null 2>&1; then
                       echo "⚠️ Node (default) not found. Installing..."
-                      nvm install --lts
-                      nvm alias default lts/*
+                      nvm install stable
                     fi
-                    nvm use default || {
+                    nvm use stable || {
                       echo '❌ Still failed to activate Node (default)!'
                       exit 1
                     }
