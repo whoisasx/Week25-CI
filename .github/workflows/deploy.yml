@@ -1,0 +1,70 @@
+name: Turborepo CI/CD Pipeline
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📥 Checkout Repo
+              uses: actions/checkout@v3
+
+            - name: 🧑‍💻 Setup Node & pnpm
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: 📦 Install pnpm
+              run: npm install -g pnpm
+
+            - name: 🔐 Setup SSH Agent
+              uses: webfactory/ssh-agent@v0.9.0
+              with:
+                  ssh-private-key: ${{ secrets.DEV_SSH_KEY }}
+
+            - name: 🚀 Deploy on Google VM
+              run: |
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
+                    set -e
+
+                    echo "📁 Navigating to project directory..."
+                    cd /home/${{ secrets.DEV_VM_HOST }}/desktop/Week25-CI
+
+                    echo "🔄 Resetting repo to match remote main..."
+                    git fetch origin main
+                    git reset --hard origin/main
+
+                    echo "📦 Installing dependencies..."
+                    pnpm install
+
+                    echo "🔐 Setting up DB environment..."
+                    cp /home/${{ secrets.DEV_VM_USERNAME }}/.env ./packages/db/.env
+
+                    echo "🛠️ Generating Prisma client..."
+                    pnpm -F db exec prisma generate
+
+                    echo "🧱 Building DB package..."
+                    pnpm --filter db build
+
+                    echo "🏗️ Building all apps..."
+                    pnpm build
+
+                    echo "🧹 Removing old PM2 processes (if any)..."
+                    pm2 delete web-app || true
+                    pm2 delete http-api || true
+                    pm2 delete ws-server || true
+
+                    echo "🚀 Starting apps using PM2..."
+                    pm2 start apps/web/.output/server/index.mjs --name web-app
+                    pm2 start apps/api/dist/index.js --name http-api
+                    pm2 start apps/ws/dist/index.js --name ws-server
+
+                    echo "💾 Saving PM2 process list for restart on reboot..."
+                    pm2 save
+
+                    echo "✅ Deployment complete!"
+                  EOF
