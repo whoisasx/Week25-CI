@@ -29,6 +29,9 @@ jobs:
                     git fetch origin main
                     git reset --hard origin/main
 
+                    echo "🛠️ Ensuring pnpm is installed..."
+                    command -v pnpm >/dev/null 2>&1 || npm install -g pnpm
+
                     echo "📦 Installing dependencies..."
                     pnpm install
 
