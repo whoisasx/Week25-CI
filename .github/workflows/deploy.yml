@@ -12,21 +12,14 @@ jobs:
             - name: 📥 Checkout Repo
               uses: actions/checkout@v3
 
-            - name: 🔐 Setup SSH Agent
-              uses: webfactory/ssh-agent@v0.9.0
-              with:
-                  ssh-private-key: ${{ secrets.DEV_SSH_KEY }}
+            - name: 🔐 Setup SSH key
+              run: |
+                  echo ${{ secrets.DEV_SSH_KEY }} > deploy_key.pem
+                  chmod 600 deploy_key.pem
 
             - name: 🚀 Deploy on Google VM
               run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
-                    set -e
-                    source ~/.bashrc || true
-                    export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-                    export PATH="$NVM_DIR/versions/node/v24.2.0/bin:$PATH"
-
+                  ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
                     echo "🧠 Whoami: $(whoami)"
                     echo "📂 Current Directory: $(pwd)"
                     echo "📃 PATH: $PATH"
@@ -40,7 +33,7 @@ jobs:
                     git reset --hard origin/main
 
                     echo "🛠️ Ensuring pnpm is installed..."
-                    command -v pnpm >/dev/null 2>&1 || npm install -g pnpm
+                    which pnpm || echo "⚠️ pnpm not found in PATH"
 
                     echo "📦 Installing dependencies..."
                     pnpm install
