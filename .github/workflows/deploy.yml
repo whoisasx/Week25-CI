@@ -86,13 +86,13 @@ jobs:
                     pnpm build
 
                     echo "🧹 Removing old PM2 processes (if any)..."
-                    pm2 delete web-app || true
-                    pm2 delete http-api || true
-                    pm2 delete ws-server || true
+                    pm2 delete web-app 
+                    pm2 delete http-api 
+                    pm2 delete ws-server
 
                     echo "🚀 Starting apps using PM2..."
                     pm2 start apps/web/.output/server/index.mjs --name web-app
-                    pm2 start apps/api/dist/index.js --name http-api
+                    pm2 start apps/http/dist/index.js --name http-server
                     pm2 start apps/ws/dist/index.js --name ws-server
 
                     echo "💾 Saving PM2 process list for restart on reboot..."
