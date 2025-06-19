@@ -27,6 +27,7 @@ jobs:
                     echo "📦 Using Node (via default alias)..."
                     if ! nvm use stable > /dev/null 2>&1; then
                       echo "⚠️ Node (default) not found. Installing..."
+                      nvm ls-remote
                       nvm install stable
                     fi
                     nvm use stable || {
