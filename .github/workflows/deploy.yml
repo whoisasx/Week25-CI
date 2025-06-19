@@ -23,6 +23,11 @@ jobs:
                     set -e
                     source ~/.bashrc || true
 
+                    echo "🧠 Whoami: $(whoami)"
+                    echo "📂 Current Directory: $(pwd)"
+                    echo "📃 PATH: $PATH"
+                    which npm || echo "⚠️ npm not found in PATH"
+
                     echo "📁 Navigating to project directory..."
                     cd /home/${{ secrets.DEV_VM_USERNAME }}/desktop/Week25-CI
 
