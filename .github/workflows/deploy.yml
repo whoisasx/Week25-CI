@@ -77,7 +77,7 @@ jobs:
                     cp /home/${{ secrets.DEV_VM_USERNAME }}/.env ./packages/db/.env
 
                     echo "🛠️ Generating Prisma client..."
-                    pnpm -F db exec prisma generate
+                    pnpm -F db exec pnpx prisma generate --schema=prisma/schema.prisma
 
                     echo "🧱 Building DB package..."
                     pnpm --filter db build
