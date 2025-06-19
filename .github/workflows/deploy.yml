@@ -24,9 +24,14 @@ jobs:
                     export NVM_DIR="\$HOME/.nvm"
                     [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
                     
-                    echo "📦 Using Node v24.2.0..."
-                    nvm use 24.2.0 || {
-                      echo '❌ Failed to activate Node v24.2.0!'
+                    echo "📦 Using Node (via default alias)..."
+                    if ! nvm use default > /dev/null 2>&1; then
+                      echo "⚠️ Node (default) not found. Installing..."
+                      nvm install --lts
+                      nvm alias default lts/*
+                    fi
+                    nvm use default || {
+                      echo '❌ Still failed to activate Node (default)!'
                       exit 1
                     }
                     echo "Node: $(node -v)"
