@@ -22,11 +22,25 @@ jobs:
                   ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.DEV_VM_USERNAME }}@${{ secrets.DEV_VM_HOST }} << 'EOF'
                     export NVM_DIR="\$HOME/.nvm"
                     [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+                    nvm use node
+                    export PATH="\$(npm bin -g):\$PATH"
 
                     echo "🧠 Whoami: \$(whoami)"
                     echo "📂 Current Directory: \$(pwd)"
                     echo "📃 PATH: \$PATH"
-                    which npm || echo "⚠️ npm not found in PATH"
+                    echo "🧪 Node: \$(node -v)"
+                    echo "📦 NPM: \$(npm -v)"
+                    echo "😊 PNPM: \$(pnpm -v)"
+
+                    echo "🛠️ Ensuring pnpm is installed..."
+                    if ! command -v pnpm &> /dev/null; then
+                      echo "📦 Installing pnpm..."
+                      npm install -g pnpm
+                    else
+                      echo "✅ pnpm already installed"
+                    fi
+
+                    echo "🚀 PNPM: \$(pnpm -v)"
 
                     echo "📁 Navigating to project directory..."
                     cd /home/${{ secrets.DEV_VM_USERNAME }}/desktop/Week25-CI
@@ -34,9 +48,6 @@ jobs:
                     echo "🔄 Resetting repo to match remote main..."
                     git fetch origin main
                     git reset --hard origin/main
-
-                    echo "🛠️ Ensuring pnpm is installed..."
-                    which pnpm || echo "⚠️ pnpm not found in PATH"
 
                     echo "📦 Installing dependencies..."
                     pnpm install
