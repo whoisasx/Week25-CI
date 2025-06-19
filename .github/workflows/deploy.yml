@@ -25,8 +25,11 @@ jobs:
                     [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
                     
                     echo "📦 Using default Node..."
-                    nvm use node
-                    echo "Node: \$(node -v || echo '❌ Not Found')"
+                    nvm use default || {
+                      echo '❌ Failed to activate default Node version!'
+                      exit 1
+                    }
+                    echo "Node: $(node -v)"
 
                     echo "🧪 Checking Node and NPM..."
                     echo "Node: \$(node -v || echo '❌ Not Found')"
